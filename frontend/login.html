@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CreditPath-AI - Login & Signup</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Brand Section -->
+        <div class="brand-section">
+            <div class="brand-logo">🏦</div>
+            <h1>CreditPath-AI</h1>
+            <p>AI-Powered Loan Default Risk Prediction & Management</p>
+            <ul class="features-list">
+                <li>Real-time risk assessment</li>
+                <li>99.07% accuracy rate</li>
+                <li>Batch processing capabilities</li>
+                <li>Smart recommendations</li>
+                <li>Enterprise-grade security</li>
+            </ul>
+        </div>
+
+        <!-- Auth Form Container -->
+        <div class="auth-form-container">
+            <!-- Toggle Buttons -->
+            <div class="form-toggle">
+                <button class="toggle-btn active" onclick="toggleForm('login')">Login</button>
+                <button class="toggle-btn" onclick="toggleForm('signup')">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <div class="form-section active" id="loginForm">
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Enter your credentials to access CreditPath-AI</p>
+
+                <div class="success-message" id="loginSuccess">
+                    Login successful! Redirecting...
+                </div>
+
+                <form id="loginFormElement">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" required>
+                        <div class="error-message" id="loginEmailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <div class="error-message" id="loginPasswordError"></div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="loginBtn">Login to Account</button>
+                </form>
+
+                <p style="text-align: center; margin-top: 20px; color: #666; font-size: 14px;">
+                    <a href="#" style="color: #667eea; text-decoration: none;">Forgot password?</a>
+                </p>
+            </div>
+
+            <!-- Signup Form -->
+            <div class="form-section" id="signupForm">
+                <h2>Create Account</h2>
+                <p class="subtitle">Join CreditPath-AI to manage loan risks</p>
+
+                <div class="success-message" id="signupSuccess">
+                    Account created successfully! Please login.
+                </div>
+
+                <form id="signupFormElement">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" id="signupFirstName" placeholder="John" required>
+                            <div class="error-message" id="signupFirstNameError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" id="signupLastName" placeholder="Doe" required>
+                            <div class="error-message" id="signupLastNameError"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" id="signupCompany" placeholder="Your Company" required>
+                        <div class="error-message" id="signupCompanyError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="signupEmail" placeholder="you@company.com" required>
+                        <div class="error-message" id="signupEmailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" placeholder="Min. 8 characters" required minlength="8">
+                        <div class="error-message" id="signupPasswordError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" placeholder="Confirm password" required>
+                        <div class="error-message" id="signupConfirmPasswordError"></div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <label for="agreeTerms">I agree to the Terms of Service and Privacy Policy</label>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="signupBtn">Create Account</button>
+                </form>
+
+                <p style="text-align: center; margin-top: 20px; color: #666; font-size: 13px;">
+                    Already have an account? <a href="#" onclick="toggleForm('login')" style="color: #667eea; text-decoration: none; font-weight: 600;">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between login and signup forms
+        function toggleForm(form) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const loginBtn = document.querySelectorAll('.toggle-btn')[0];
+            const signupBtn = document.querySelectorAll('.toggle-btn')[1];
+
+            if (form === 'login') {
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+                loginBtn.classList.add('active');
+                signupBtn.classList.remove('active');
+            } else {
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+                signupBtn.classList.add('active');
+                loginBtn.classList.remove('active');
+            }
+
+            // Clear error messages
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('show');
+            });
+        }
+
+        // Validate email format
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.add('show');
+            }
+        }
+
+        // Clear error message
+        function clearError(elementId) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) {
+                errorEl.classList.remove('show');
+            }
+        }
+
+        // Login form submission
+        document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+
+            // Clear previous errors
+            clearError('loginEmailError');
+            clearError('loginPasswordError');
+
+            // Validation
+            let hasError = false;
+            if (!isValidEmail(email)) {
+                showError('loginEmailError', 'Please enter a valid email address');
+                hasError = true;
+            }
+            if (password.length < 6) {
+                showError('loginPasswordError', 'Password must be at least 6 characters');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            // Simulate API call
+            btn.classList.add('loading');
+            btn.textContent = 'Logging in...';
+
+            try {
+                // Replace with actual API endpoint
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    document.getElementById('loginSuccess').classList.add('show');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    showError('loginPasswordError', 'Invalid email or password');
+                }
+            } catch (error) {
+                showError('loginPasswordError', 'Connection error. Please try again.');
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = 'Login to Account';
+            }
+        });
+
+        // Signup form submission
+        document.getElementById('signupFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const firstName = document.getElementById('signupFirstName').value;
+            const lastName = document.getElementById('signupLastName').value;
+            const company = document.getElementById('signupCompany').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            const btn = document.getElementById('signupBtn');
+
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+
+            // Validation
+            let hasError = false;
+            if (firstName.trim().length < 2) {
+                showError('signupFirstNameError', 'First name must be at least 2 characters');
+                hasError = true;
+            }
+            if (lastName.trim().length < 2) {
+                showError('signupLastNameError', 'Last name must be at least 2 characters');
+                hasError = true;
+            }
+            if (company.trim().length < 2) {
+                showError('signupCompanyError', 'Company name is required');
+                hasError = true;
+            }
+            if (!isValidEmail(email)) {
+                showError('signupEmailError', 'Please enter a valid email address');
+                hasError = true;
+            }
+            if (password.length < 8) {
+                showError('signupPasswordError', 'Password must be at least 8 characters');
+                hasError = true;
+            }
+            if (password !== confirmPassword) {
+                showError('signupConfirmPasswordError', 'Passwords do not match');
+                hasError = true;
+            }
+            if (!agreeTerms) {
+                showError('signupConfirmPasswordError', 'You must agree to the terms');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            // Simulate API call
+            btn.classList.add('loading');
+            btn.textContent = 'Creating Account...';
+
+            try {
+                // Replace with actual API endpoint
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        firstName,
+                        lastName,
+                        company,
+                        email,
+                        password
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('signupSuccess').classList.add('show');
+                    setTimeout(() => {
+                        toggleForm('login');
+                        document.getElementById('signupFormElement').reset();
+                    }, 1500);
+                } else {
+                    showError('signupConfirmPasswordError', 'This email is already registered');
+                }
+            } catch (error) {
+                showError('signupConfirmPasswordError', 'Connection error. Please try again.');
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = 'Create Account';
+            }
+        });
+
+        // Real-time error clearing on input
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                const errorId = input.id + 'Error';
+                clearError(errorId);
+            });
+        });
+    </script>
+</body>
+</html>
