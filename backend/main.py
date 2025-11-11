@@ -5,6 +5,8 @@ Loan Default Risk Prediction API with Recommendation Engine
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, validator
 from typing import Optional, List
 import pickle
@@ -38,6 +40,44 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ==============================================================================
+# SERVE FRONTEND FILES
+# ==============================================================================
+
+# Serve static files (CSS, JS, images)
+static_path = os.path.join(os.path.dirname(__file__), "frontend")
+if os.path.exists(static_path):
+    app.mount("/static", StaticFiles(directory=static_path), name="static")
+    logger.info(f"✓ Frontend static files mounted from {static_path}")
+else:
+    logger.warning(f"Frontend directory not found at {static_path}")
+
+# Serve index.html for root path
+@app.get("/", include_in_schema=False)
+async def serve_root():
+    """Serve frontend index.html"""
+    index_path = os.path.join(static_path, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path, media_type="text/html")
+    return {"message": "CreditPath-AI API - Frontend home page"}
+
+# Serve individual HTML pages
+@app.get("/predict", include_in_schema=False)
+async def serve_predict():
+    """Serve predict page"""
+    page_path = os.path.join(static_path, "predict.html")
+    if os.path.exists(page_path):
+        return FileResponse(page_path, media_type="text/html")
+    return {"error": "Predict page not found"}
+
+@app.get("/batch", include_in_schema=False)
+async def serve_batch():
+    """Serve batch page"""
+    page_path = os.path.join(static_path, "batch.html")
+    if os.path.exists(page_path):
+        return FileResponse(page_path, media_type="text/html")
+    return {"error": "Batch page not found"}
 
 # ==============================================================================
 # LOAD MODEL ARTIFACTS
@@ -240,7 +280,7 @@ def preprocess_input(borrower_data: dict) -> pd.DataFrame:
 # API ENDPOINTS
 # ==============================================================================
 
-@app.get("/")
+@app.get("/api/", tags=["API Info"])
 def root():
     """Root endpoint - API information"""
     return {
@@ -248,13 +288,14 @@ def root():
         "version": "1.0.0",
         "status": "running",
         "endpoints": {
-            "health": "/health",
-            "predict": "/predict",
-            "model_info": "/model_info"
+            "health": "/api/health",
+            "predict": "/api/predict",
+            "model_info": "/api/model_info",
+            "frontend": "/"
         }
     }
 
-@app.get("/health")
+@app.get("/api/health", tags=["API Info"])
 def health_check():
     """Health check endpoint"""
     return {
@@ -264,7 +305,7 @@ def health_check():
         "timestamp": datetime.now().isoformat()
     }
 
-@app.get("/model_info")
+@app.get("/api/model_info", tags=["API Info"])
 def model_info():
     """Get model information and configuration"""
     return {
@@ -280,7 +321,7 @@ def model_info():
         "version": "1.0.0"
     }
 
-@app.post("/predict", response_model=PredictionResponse)
+@app.post("/api/predict", response_model=PredictionResponse, tags=["Predictions"])
 async def predict_default(borrower: BorrowerInput):
     """
     Predict loan default risk for a single borrower
@@ -333,7 +374,7 @@ async def predict_default(borrower: BorrowerInput):
         logger.error(f"Prediction error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
 
-@app.post("/predict_batch")
+@app.post("/api/predict_batch", tags=["Predictions"])
 async def predict_batch(borrowers: List[BorrowerInput]):
     """
     Predict loan default risk for multiple borrowers
@@ -399,8 +440,14 @@ async def startup_event():
     logger.info(f"Model: LightGBM (AUC: 0.9907)")
     logger.info(f"Features: {len(feature_columns)}")
     logger.info(f"Thresholds: Low={LOW_THRESHOLD}, High={HIGH_THRESHOLD}")
+    logger.info("Frontend: Available at /")
+    logger.info("API Docs: Available at /api/docs")
     logger.info("API Ready to serve predictions!")
     logger.info("=" * 80)
+
+# ==============================================================================
+# RUN APPLICATION
+# ==============================================================================
 
 if __name__ == "__main__":
     import uvicorn
